@@ -1,6 +1,7 @@
 package com.mindex.challenge.service.impl;
 
 import com.mindex.challenge.data.Employee;
+import com.mindex.challenge.data.ReportingStructure;
 import com.mindex.challenge.service.EmployeeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,7 @@ public class EmployeeServiceImplTest {
 
     private String employeeUrl;
     private String employeeIdUrl;
+    private String reportingStructureUrl;
 
     @Autowired
     private EmployeeService employeeService;
@@ -38,6 +40,7 @@ public class EmployeeServiceImplTest {
     public void setup() {
         employeeUrl = "http://localhost:" + port + "/employee";
         employeeIdUrl = "http://localhost:" + port + "/employee/{id}";
+        reportingStructureUrl = "http://localhost:" + port + "/reportingStructure/{id}";
     }
 
     @Test
@@ -75,6 +78,18 @@ public class EmployeeServiceImplTest {
                         readEmployee.getEmployeeId()).getBody();
 
         assertEmployeeEquivalence(readEmployee, updatedEmployee);
+
+        /*Reporting Structure checks */
+
+        ReportingStructure readReportingStructure = new ReportingStructure();
+        readReportingStructure.setEmployee(createdEmployee);
+        if ( testEmployee.getDirectReports() != null) {
+            readReportingStructure.setNumberOfReports(testEmployee.getDirectReports().size());
+            assertReportEquivalence(createdEmployee, readReportingStructure);
+        }
+        
+
+       
     }
 
     private static void assertEmployeeEquivalence(Employee expected, Employee actual) {
@@ -83,4 +98,11 @@ public class EmployeeServiceImplTest {
         assertEquals(expected.getDepartment(), actual.getDepartment());
         assertEquals(expected.getPosition(), actual.getPosition());
     }
+
+    private static void assertReportEquivalence(Employee expected, ReportingStructure actual) {
+        assertEquals(java.util.Optional.of(expected.getDirectReports().size()),actual.getNumberOfReports());
+      
+    }
+
+    
 }
